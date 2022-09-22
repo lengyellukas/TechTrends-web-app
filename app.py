@@ -65,6 +65,23 @@ def create():
 
     return render_template('create.html')
 
+# Define the healthcheck endpoint
+@app.route('/healthz')
+def healthz():
+    data = {'result': 'OK healthy'}
+    return jsonify(data), 200
+
+# Define the metrics endpoint
+@app.route('/metrics')
+def metrics():
+    connection = get_db_connection()
+    postsCount = connection.execute('SELECT COUNT(*) FROM posts').fetchone()
+    connection.close()
+    #data = {'post_count': postsCount}
+    #return jsonify(data), 200
+    return "4"
+
+
 # start the application on port 3111
 if __name__ == "__main__":
    app.run(host='0.0.0.0', port='3111')
