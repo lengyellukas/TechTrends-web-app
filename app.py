@@ -1,5 +1,5 @@
 import sqlite3
-import sys
+import logging
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
@@ -40,13 +40,16 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
+      app.logger.error('Article with post ID=\"%d\" could not be accessed. Non-existing post ID!', post_id)
       return render_template('404.html'), 404
     else:
+      app.logger.info('The article with post ID=\"%d\" was accessed', post_id)
       return render_template('post.html', post=post)
 
 # Define the About Us page
 @app.route('/about')
 def about():
+    app.logger.info('\"About us\" page was accessed')
     return render_template('about.html')
 
 # Define the post creation functionality 
@@ -65,6 +68,8 @@ def create():
             connection.commit()
             connection.close()
 
+            app.logger.info('New article was created')
+    
             return redirect(url_for('index'))
 
     return render_template('create.html')
@@ -89,11 +94,18 @@ def metrics():
     connectionsCount = connectionsRow[0]
 
     connection.close()
-    
-    data = {'db_connection_count': connectionsCount, 'post_count': postsCount}
-    return jsonify(data), 200
 
+    response = app.response_class(
+        response=json.dumps({'db_connection_count': connectionsCount, 'post_count': postsCount}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 # start the application on port 3111
 if __name__ == "__main__":
-   app.run(host='0.0.0.0', port='3111')
+    logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
+    app.run(host='0.0.0.0', port='3111')
