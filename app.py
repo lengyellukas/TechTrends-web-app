@@ -1,13 +1,17 @@
 import sqlite3
+import sys
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
-
+        
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
+    #add connection entry for total_connection_count
+    connection.execute('INSERT INTO connections default values')
+    connection.commit()
     return connection
 
 # Function to get a post using its ID
@@ -65,21 +69,29 @@ def create():
 
     return render_template('create.html')
 
-# Define the healthcheck endpoint
 @app.route('/healthz')
-def healthz():
-    data = {'result': 'OK healthy'}
-    return jsonify(data), 200
+def newhealth():
+    response = app.response_class(
+        response=json.dumps({"result": "OK - healthy"}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 # Define the metrics endpoint
 @app.route('/metrics')
 def metrics():
     connection = get_db_connection()
-    postsCount = connection.execute('SELECT COUNT(*) FROM posts').fetchone()
+    postsRow = connection.execute('SELECT COUNT(*) FROM posts').fetchone()
+    postsCount = postsRow[0]
+
+    connectionsRow = connection.execute('SELECT COUNT(*) FROM connections').fetchone()
+    connectionsCount = connectionsRow[0]
+
     connection.close()
-    #data = {'post_count': postsCount}
-    #return jsonify(data), 200
-    return "4"
+    
+    data = {'db_connection_count': connectionsCount, 'post_count': postsCount}
+    return jsonify(data), 200
 
 
 # start the application on port 3111
