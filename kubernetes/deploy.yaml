@@ -21,11 +21,11 @@ spec:
         app: techtrends
     spec:
       containers:
-      - image: lengyellukas/techtrends:latest
-        name: techtrends 
+      - name: techtrends 
+        image: lengyellukas/techtrends:latest 
         imagePullPolicy: IfNotPresent
         ports:
-          — containerPort: 3111
+          - containerPort: 3111
             protocol: TCP
         livenessProbe:
           httpGet:
