@@ -1,15 +1,17 @@
-namespace:
-  name: staging
-
-service:
-  port: 5111
-
-replicaCount: 3
-
-resources:
-  requests:
-    cpu: 300m
-    memory: 90Mi
-  limits:
-    cpu: 500m
-    memory: 128Mi
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: techtrends-staging
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  project: default
+  source:
+    helm:
+      valueFiles:
+      - values-staging.yaml
+    repoURL: https://github.com/lengyellukas/project_4.git
+    targetRevision: HEAD
+    path: helm
