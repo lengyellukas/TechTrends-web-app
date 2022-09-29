@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: techtrends
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  project: default
+  source:
+    helm:
+      valueFiles:
+      - helm-techtrends-staging.yaml
+    repoURL: https://github.com/lengyellukas/project_4.git
+    targetRevision: HEAD
+    path: helm
