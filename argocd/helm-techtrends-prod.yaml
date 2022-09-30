@@ -12,6 +12,6 @@ spec:
     helm:
       valueFiles:
       - values-prod.yaml
-    repoURL: https://github.com/lengyellukas/project_4.git
+    repoURL: https://github.com/lengyellukas/project_4
     targetRevision: HEAD
     path: helm
