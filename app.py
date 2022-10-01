@@ -3,10 +3,9 @@ import logging
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
-        
-# Function to get a database connection.
-# This function connects to database with the name `database.db`
+
 def get_db_connection():
+    """This function connects to database with the name `database.db`"""
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
     #add connection entry for total_connection_count
